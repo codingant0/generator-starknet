@@ -2,7 +2,7 @@
 const path = require("path");
 const helpers = require("yeoman-test");
 const fs = require("fs");
-const { HARDHAT } = require("../generators/app/constants");
+const { HARDHAT } = require("../app/constants");
 
 const assertMinimalFiles = (runResult) => {
   runResult.assertFile(".gitignore");
@@ -23,11 +23,15 @@ const assertERC721Files = (runResult) => {
   runResult.assertFile("tests/ERC721.js");
 };
 
+const teardown = () => {
+  fs.rmSync("generaotr.exp");
+};
+
 describe("Testing generate a minimal Hardhat project", () => {
   let runResult;
   beforeAll(async () => {
     runResult = await helpers
-      .run(path.join(__dirname, "../generators/app"))
+      .run(path.join(__dirname, "../app"))
       .inTmpDir(function (dir) {
         const done = this.async();
         fs.rename(path.join(__dirname, "test"), dir, done);
@@ -39,6 +43,10 @@ describe("Testing generate a minimal Hardhat project", () => {
       });
   });
 
+  afterAll(() => {
+    teardown();
+  });
+
   it("Should have the minimum required files", () => {
     assertMinimalFiles(runResult);
   });
@@ -48,7 +56,7 @@ describe("Testing generate a Hardhat project with ERC20 token", () => {
   let runResult;
   beforeAll(async () => {
     runResult = await helpers
-      .run(path.join(__dirname, "../generators/app"))
+      .run(path.join(__dirname, "../app"))
       .inTmpDir(function (dir) {
         const done = this.async();
         fs.rename(path.join(__dirname, "test"), dir, done);
@@ -57,6 +65,10 @@ describe("Testing generate a Hardhat project with ERC20 token", () => {
         framework: HARDHAT,
         wantERC20: true,
       });
+  });
+
+  afterAll(() => {
+    teardown();
   });
 
   it("Should have the required files", () => {
@@ -69,7 +81,7 @@ describe("Testing generate a Hardhat project with ERC20 and ERC721 tokens", () =
   let runResult;
   beforeAll(async () => {
     runResult = await helpers
-      .run(path.join(__dirname, "../generators/app"))
+      .run(path.join(__dirname, "../app"))
       .inTmpDir(function (dir) {
         const done = this.async();
         fs.rename(path.join(__dirname, "test"), dir, done);
@@ -79,6 +91,10 @@ describe("Testing generate a Hardhat project with ERC20 and ERC721 tokens", () =
         wantERC20: true,
         wantERC721: true,
       });
+  });
+
+  afterAll(() => {
+    teardown();
   });
 
   it("Should have the required files", () => {
